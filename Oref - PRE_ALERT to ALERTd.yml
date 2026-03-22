@@ -1,0 +1,28 @@
+alias: Oref - PRE_ALERT to ALERT - Flash light (Jerusalem South)
+description: ""
+triggers:
+  - entity_id: sensor.oref_alert
+    from: pre_alert
+    to: alert
+    trigger: state
+conditions:
+  - condition: state
+    entity_id: binary_sensor.jewish_calendar_issur_melacha_in_effect_4
+    state: "off"
+  - condition: template
+    value_template: |
+      {{ 'ירושלים - דרום' in
+         (state_attr('sensor.oref_alert', 'record').data | default('')) }}
+actions:
+  - repeat:
+      count: 3
+      sequence:
+        - target:
+            entity_id: light.interupteur_salon
+          action: light.turn_off
+        - delay: "00:00:01"
+        - target:
+            entity_id: light.interupteur_salon
+          action: light.turn_on
+        - delay: "00:00:03"
+mode: restart
