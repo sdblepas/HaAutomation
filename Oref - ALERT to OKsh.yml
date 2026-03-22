@@ -1,0 +1,38 @@
+alias: Oref - ALERT to OK - Restore Lights (Jerusalem South - Shabbat)
+triggers:
+  - entity_id: sensor.oref_alert
+    to: ok
+    trigger: state
+conditions:
+  - condition: state
+    entity_id: binary_sensor.jewish_calendar_issur_melacha_in_effect_4
+    state: "on"
+actions:
+  - choose:
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: time
+                weekday:
+                  - fri
+                after: "18:00:00"
+                before: "22:14:00"
+              - condition: time
+                weekday:
+                  - sat
+                after: "07:31:00"
+        sequence:
+          - target:
+              entity_id:
+                - switch.sonoff_100057456d_1
+                - switch.sonoff_100057456d_2
+                - light.interupteur_salon
+            action: homeassistant.turn_on
+    default:
+      - target:
+          entity_id:
+            - switch.sonoff_100057456d_1
+            - switch.sonoff_100057456d_2
+            - light.interupteur_salon
+        action: homeassistant.turn_off
+mode: single
